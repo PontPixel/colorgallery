@@ -169,6 +169,44 @@ const LEVELS=[
     <g fill="${INK}" pointer-events="none"><rect x="126" y="182" width="3" height="3"/><rect x="206" y="178" width="3" height="3"/><rect x="268" y="180" width="3" height="3"/><rect x="152" y="184" width="3" height="3"/></g>`
 }
 ].concat(ART_LEVELS).sort((a,b)=>ORDER.indexOf(a.id)-ORDER.indexOf(b.id));
+// ---------- Art quiz: free paint when you run out, plus a daily quiz with a streak ----------
+// Facts are only filled where they are unambiguous: prints with many impressions, works in several
+// versions or private collections have no museum; artists with contested nationality have no country.
+const QUIZ={
+  options:4, rescuePaint:5, rescuePerDay:3,            // out-of-paint quiz: +5 paint, once per picture attempt, 3 a day
+  dailyCoins:[10,15,20,25,30,35,50],                   // daily quiz reward by streak day (day 7+ keeps the last value)
+  easyTypes:['artist','style','country'], allTypes:['artist','century','style','museum','country'],
+  artistGroups:{
+    modern:['Kazimir Malevich','Piet Mondrian','Wassily Kandinsky','Paul Klee','Henri Matisse','Pablo Picasso','Robert Delaunay','Gustav Klimt'],
+    impressionist:['Vincent van Gogh','Claude Monet','Pierre-Auguste Renoir','Paul Cézanne','Paul Gauguin','Edgar Degas','Edvard Munch','Georges Seurat'],
+    japanese:['Katsushika Hokusai','Utagawa Hiroshige','Kitagawa Utamaro','Utagawa Kuniyoshi'],
+    oldmaster:['Leonardo da Vinci','Johannes Vermeer','Rembrandt','Sandro Botticelli','Raphael','Titian'],
+  },
+  pools:{
+    styles:['Suprematism','De Stijl','Abstract art','Ukiyo-e','Expressionism','Post-Impressionism','Impressionism','Renaissance','Dutch Golden Age','Art Nouveau','Cubism','Baroque'],
+    museums:['Louvre, Paris','Museum of Modern Art, New York','The Met, New York','Uffizi, Florence','Rijksmuseum, Amsterdam','Mauritshuis, The Hague','Belvedere, Vienna','National Gallery, London','Kunsthaus Zürich','Lenbachhaus, Munich','National Museum, Oslo',"Musée d'Orsay, Paris",'Musée Marmottan Monet, Paris','Prado, Madrid'],
+    countries:['Netherlands','France','Japan','Norway','Russia','Italy','Austria','Spain','Germany'],
+  },
+  facts:[
+    {id:'malevich',title:'Suprematism',artist:'Kazimir Malevich',century:'20th century',style:'Suprematism',group:'modern',fact:'Malevich built his Suprematist paintings from nothing but simple geometric shapes on a white ground.'},
+    {id:'mondrian',title:'Composition with Red, Blue and Yellow',artist:'Piet Mondrian',century:'20th century',style:'De Stijl',museum:'Kunsthaus Zürich',country:'Netherlands',group:'modern',fact:'Mondrian limited himself to the three primary colors, plus black, white and gray.'},
+    {id:'kandinsky',title:'Squares with Concentric Circles',artist:'Wassily Kandinsky',century:'20th century',style:'Abstract art',museum:'Lenbachhaus, Munich',country:'Russia',group:'modern',fact:"It's a small color study on paper, not a large canvas."},
+    {id:'redfuji',title:'Fine Wind, Clear Morning (Red Fuji)',artist:'Katsushika Hokusai',century:'19th century',style:'Ukiyo-e',country:'Japan',group:'japanese',fact:'It belongs to the series Thirty-six Views of Mount Fuji, printed from carved wooden blocks.'},
+    {id:'klee',title:'Castle and Sun',artist:'Paul Klee',century:'20th century',group:'modern',fact:'Klee was teaching at the Bauhaus art school in Germany when he painted it.'},
+    {id:'starry',title:'The Starry Night',artist:'Vincent van Gogh',century:'19th century',style:'Post-Impressionism',museum:'Museum of Modern Art, New York',country:'Netherlands',group:'impressionist',fact:'Van Gogh painted it from memory of the view from his window at the asylum in Saint-Rémy-de-Provence.'},
+    {id:'monet',title:'Bridge over a Pond of Water Lilies',artist:'Claude Monet',century:'19th century',style:'Impressionism',museum:'The Met, New York',country:'France',group:'impressionist',fact:'Monet had the pond and the Japanese-style bridge built in his own garden at Giverny.'},
+    {id:'scream',title:'The Scream',artist:'Edvard Munch',century:'19th century',style:'Expressionism',museum:'National Museum, Oslo',country:'Norway',group:'impressionist',fact:'Munch made several versions of The Scream, in paint, pastel and print.'},
+    {id:'wave',title:'The Great Wave off Kanagawa',artist:'Katsushika Hokusai',century:'19th century',style:'Ukiyo-e',country:'Japan',group:'japanese',fact:'Look closely: Mount Fuji sits small in the background, between the waves.'},
+    {id:'sunflowers',title:'Sunflowers',artist:'Vincent van Gogh',century:'19th century',style:'Post-Impressionism',country:'Netherlands',group:'impressionist',fact:'Van Gogh painted his sunflowers to decorate the room for his friend Paul Gauguin in Arles.'},
+    // Not levels yet: text-only questions in the daily quiz
+    {id:'monalisa',title:'Mona Lisa',artist:'Leonardo da Vinci',century:'16th century',style:'Renaissance',museum:'Louvre, Paris',country:'Italy',group:'oldmaster',fact:"It's painted on a poplar wood panel, not on canvas."},
+    {id:'pearl',title:'Girl with a Pearl Earring',artist:'Johannes Vermeer',century:'17th century',style:'Dutch Golden Age',museum:'Mauritshuis, The Hague',country:'Netherlands',group:'oldmaster',fact:"It's a tronie, a study of a face, not a portrait of a known sitter."},
+    {id:'kiss',title:'The Kiss',artist:'Gustav Klimt',century:'20th century',style:'Art Nouveau',museum:'Belvedere, Vienna',country:'Austria',group:'modern',fact:'Klimt used real gold leaf on the canvas.'},
+    {id:'venus',title:'The Birth of Venus',artist:'Sandro Botticelli',century:'15th century',style:'Renaissance',museum:'Uffizi, Florence',country:'Italy',group:'oldmaster',fact:'Venus arrives on a giant scallop shell, blown ashore by the winds.'},
+    {id:'sunrise',title:'Impression, Sunrise',artist:'Claude Monet',century:'19th century',style:'Impressionism',museum:'Musée Marmottan Monet, Paris',country:'France',group:'impressionist',fact:'This painting gave the Impressionist movement its name.'},
+    {id:'nightwatch',title:'The Night Watch',artist:'Rembrandt',century:'17th century',style:'Dutch Golden Age',museum:'Rijksmuseum, Amsterdam',country:'Netherlands',group:'oldmaster',fact:"It isn't a night scene: darkened varnish earned it the nickname."},
+  ],
+};
 window.GAME={name:'ColorGallery', saveKey:'colorgallery', firstProper:'kandinsky',
-  logo:'img/logo-hero.jpg', shareLogo:'img/logo-card.jpg', levels:LEVELS};
+  logo:'img/logo-hero.jpg', shareLogo:'img/logo-card.jpg', levels:LEVELS, quiz:QUIZ};
 })();
